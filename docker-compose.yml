@@ -1,20 +1,14 @@
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: clean-architecture-knowledge-db
+  backend:
+    build:
+      context: ./backend
+    container_name: clean-architecture-knowledge-backend
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: knowledge_app
+      PORT: 3000
+      GITHUB_OWNER: ${GITHUB_OWNER:-}
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-}
+      GITHUB_BRANCH: ${GITHUB_BRANCH:-main}
+      GITHUB_KNOWLEDGE_PATH: ${GITHUB_KNOWLEDGE_PATH:-docs}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
     ports:
-      - "5433:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d knowledge_app"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-volumes:
-  postgres-data:
+      - "3000:3000"

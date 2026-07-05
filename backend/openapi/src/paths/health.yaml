@@ -1,0 +1,20 @@
+get:
+  summary: Health check
+  operationId: getHealth
+  security: []
+  responses:
+    "200":
+      description: API health status.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                enum:
+                  - ok
+    "500":
+      description: Unexpected server error.

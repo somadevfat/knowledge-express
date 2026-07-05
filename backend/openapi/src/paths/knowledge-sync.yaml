@@ -1,0 +1,16 @@
+post:
+  summary: Sync knowledge articles from GitHub
+  operationId: syncKnowledge
+  security: []
+  responses:
+    "200":
+      description: Knowledge sync result.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                $ref: "../components/schemas/sync-knowledge-result.yaml"

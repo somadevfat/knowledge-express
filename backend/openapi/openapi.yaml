@@ -1,0 +1,258 @@
+openapi: 3.0.3
+info:
+  title: Clean Architecture Knowledge API
+  version: 0.1.0
+  license:
+    name: UNLICENSED
+servers:
+  - url: http://localhost:3000
+security: []
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: getHealth
+      security: []
+      responses:
+        '200':
+          description: API health status.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ok
+        '500':
+          description: Unexpected server error.
+  /knowledge:
+    get:
+      summary: List knowledge articles
+      operationId: listKnowledge
+      security: []
+      responses:
+        '200':
+          description: Knowledge article list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/knowledge'
+  /knowledge/search:
+    get:
+      summary: Search knowledge articles
+      operationId: searchKnowledge
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+        - name: tag
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Knowledge article list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/knowledge'
+        '400':
+          $ref: '#/components/responses/validation-error'
+  /knowledge/tree:
+    get:
+      summary: Get knowledge wiki tree
+      operationId: getKnowledgeTree
+      security: []
+      responses:
+        '200':
+          description: Knowledge wiki tree.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/knowledge-tree-node'
+  /knowledge/sync:
+    post:
+      summary: Sync knowledge articles from GitHub
+      operationId: syncKnowledge
+      security: []
+      responses:
+        '200':
+          description: Knowledge sync result.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/sync-knowledge-result'
+  /knowledge/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+    get:
+      summary: Get a knowledge article
+      operationId: getKnowledge
+      security: []
+      responses:
+        '200':
+          description: Knowledge article.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/knowledge'
+        '404':
+          $ref: '#/components/responses/not-found'
+components:
+  schemas:
+    Knowledge:
+      $ref: '#/components/schemas/knowledge'
+    KnowledgeTreeNode:
+      $ref: '#/components/schemas/knowledge-tree-node'
+    SyncKnowledgeResult:
+      $ref: '#/components/schemas/sync-knowledge-result'
+    ErrorResponse:
+      $ref: '#/components/schemas/error-response'
+    knowledge:
+      type: object
+      required:
+        - id
+        - title
+        - body
+        - excerpt
+        - tags
+        - category
+        - path
+        - order
+        - sourceUrl
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        body:
+          type: string
+          minLength: 1
+        excerpt:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+        path:
+          type: string
+        order:
+          type: number
+        sourceUrl:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+    error-response:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              description: Validator-specific error details.
+    knowledge-tree-node:
+      type: object
+      required:
+        - id
+        - title
+        - path
+        - children
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        path:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/knowledge-tree-node'
+    sync-knowledge-result:
+      type: object
+      required:
+        - syncedCount
+        - syncedAt
+      properties:
+        syncedCount:
+          type: number
+        syncedAt:
+          type: string
+          format: date-time
+  responses:
+    ValidationError:
+      $ref: '#/components/responses/validation-error'
+    NotFound:
+      $ref: '#/components/responses/not-found'
+    validation-error:
+      description: Request validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error-response'
+    not-found:
+      description: Resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error-response'

@@ -1,88 +1,43 @@
-# Clean Architecture Knowledge API
+# Clean Architecture Knowledge App
 
-LTでクリーンアーキテクチャを説明するための、ナレッジ管理APIのMVPです。
+クリーンアーキテクチャ学習用のナレッジ管理アプリです。
 
-## 技術スタック
+GitHubで管理するMarkdown記事を、Azure DevOps Wikiのように閲覧・検索できるアプリへ育てる方針です。
 
-- Express
-- TypeScript
-- Zod
-- Drizzle ORM
-- PostgreSQL
-- Vitest
+現在は `backend/` に Express のAPIがあります。次に `frontend/` を追加する想定です。
 
-## セットアップ
+## 起動
 
 ```bash
+docker compose up --build
+```
+
+API:
+
+- `http://localhost:3000/health`
+- `http://localhost:3000/knowledge`
+
+## 構成
+
+```txt
+backend/
+  src/
+  docs/
+frontend/
+  今後追加予定
+docs/
+  frontend-requirements.md
+```
+
+## バックエンド開発
+
+```bash
+cd backend
 npm install
 cp .env.example .env
-docker compose up -d db
-npm run db:push
 npm run dev
 ```
 
-## テスト
+## フロントエンド計画
 
-```bash
-npm test
-```
-
-API結合テストだけ実行する場合:
-
-```bash
-npm run test:api
-```
-
-起動中のローカルサーバに対して疎通確認する場合:
-
-```bash
-npm run test:live
-```
-
-## API
-
-- `GET /health`
-- `GET /knowledge?q=&tag=`
-- `GET /knowledge/:id`
-- `POST /knowledge`
-- `PUT /knowledge/:id`
-- `DELETE /knowledge/:id`
-
-## ドキュメント
-
-- [要件定義](docs/requirements.md)
-- [クリーンアーキテクチャ説明](docs/clean-architecture-guide.md)
-- [API仕様](docs/api.md)
-
-## ディレクトリ方針
-
-学習用に、機能コンテキスト単位で少し細かく分けています。
-
-```txt
-src/contexts/knowledge/
-  domain/
-  application/
-    ports/
-    use-cases/
-  interface-adapters/
-  infrastructure/
-```
-
-単体テストは、対象コードの近くに `*.test.ts` として置いています。
-
-## Docker
-
-PostgreSQLはDocker Composeで起動します。
-
-```bash
-docker compose up -d db
-docker compose down
-```
-
-ホスト側のポートは、ローカルPostgreSQLと衝突しにくいように `5433` を使っています。
-
-DBのデータを消したい場合:
-
-```bash
-docker compose down -v
-```
+- [フロントエンドMVP要件定義](docs/frontend-requirements.md)

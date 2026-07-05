@@ -1,0 +1,33 @@
+get:
+  summary: Search knowledge articles
+  operationId: searchKnowledge
+  security: []
+  parameters:
+    - name: q
+      in: query
+      required: false
+      schema:
+        type: string
+        minLength: 1
+    - name: tag
+      in: query
+      required: false
+      schema:
+        type: string
+        minLength: 1
+  responses:
+    "200":
+      description: Knowledge article list.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "../components/schemas/knowledge.yaml"
+    "400":
+      $ref: "../components/responses/validation-error.yaml"

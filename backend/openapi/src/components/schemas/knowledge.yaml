@@ -1,0 +1,38 @@
+type: object
+required:
+  - id
+  - title
+  - body
+  - excerpt
+  - tags
+  - category
+  - path
+  - order
+  - sourceUrl
+properties:
+  id:
+    type: string
+  title:
+    type: string
+    minLength: 1
+    maxLength: 120
+  body:
+    type: string
+    minLength: 1
+  excerpt:
+    type: string
+  tags:
+    type: array
+    items:
+      type: string
+  category:
+    type: string
+  path:
+    type: string
+  order:
+    type: number
+  sourceUrl:
+    type: string
+  updatedAt:
+    type: string
+    format: date-time
