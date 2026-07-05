@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npm run types:generate",
     "dev": "next dev -p 3001",
+    "prebuild": "npm run types:generate",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "types:generate": "openapi-typescript ../backend/openapi/openapi.yaml -o src/shared/api/schema.gen.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -26,6 +29,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

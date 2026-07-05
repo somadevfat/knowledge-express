@@ -13,6 +13,6 @@ export function createOpenApiValidator(): RequestHandler[] {
   return OpenApiValidator.middleware({
     apiSpec: openApiSpecPath,
     validateRequests: true,
-    validateResponses: false
+    validateResponses: true
   }) as RequestHandler[];
 }

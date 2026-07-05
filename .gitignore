@@ -8,3 +8,7 @@ coverage
 backend/coverage
 drizzle
 backend/drizzle
+
+# generated from openapi/openapi.yaml
+backend/src/shared/api/schema.gen.ts
+frontend/src/shared/api/schema.gen.ts

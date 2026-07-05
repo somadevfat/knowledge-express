@@ -43,6 +43,19 @@ npm run openapi:bundle
 npm run openapi:lint
 ```
 
+`npm run dev` / `npm run build` / `npm test` の前に自動実行される（`predev` / `prebuild` / `pretest`）ので、手動での再bundleは基本不要です。
+
+## backendとの型共有
+
+`openapi/src/components/schemas/*.yaml`（OpenAPI定義）が唯一の手書きソースです。ここから2つの型が自動生成されます。
+
+- `src/shared/api/schema.gen.ts`（backend）— `presenters/knowledge-presenter.ts`の`KnowledgeResponse`はこの生成型を使っています
+- `frontend/src/shared/api/schema.gen.ts`（frontend）— 同じOpenAPI定義から生成
+
+Entity（`domain/entities/knowledge.ts`の`KnowledgeProps`）はドメイン内部の表現なので、意図的にAPI契約とは切り離しています。
+
+さらに`express-openapi-validator`の`validateResponses: true`により、実際のレスポンスがOpenAPI定義と食い違うと`npm test`実行時にエラーで検知されます。presenterやEntityの形を変えたときは、`openapi/src/components/schemas/knowledge.yaml`など該当するyamlも一緒に更新してください。
+
 API結合テストだけ実行する場合:
 
 ```bash

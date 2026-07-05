@@ -1,17 +1,7 @@
 import type { Knowledge } from "../../../domain/entities/knowledge.js";
+import type { components } from "../../../../../shared/api/schema.gen.js";
 
-export type KnowledgeResponse = {
-  id: string;
-  title: string;
-  body: string;
-  excerpt: string;
-  tags: string[];
-  category: string;
-  path: string;
-  order: number;
-  sourceUrl: string;
-  updatedAt?: string;
-};
+export type KnowledgeResponse = components["schemas"]["Knowledge"];
 
 /**
  * ナレッジEntityをHTTPレスポンス用DTOへ変換する。

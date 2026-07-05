@@ -1,22 +1,7 @@
-export type Knowledge = {
-  id: string;
-  title: string;
-  body: string;
-  excerpt: string;
-  tags: string[];
-  category: string;
-  path: string;
-  order: number;
-  sourceUrl: string;
-  updatedAt?: string;
-};
+import type { components } from "@/shared/api/schema.gen";
 
-export type KnowledgeTreeNode = {
-  id: string;
-  title: string;
-  path: string;
-  children: KnowledgeTreeNode[];
-};
+export type Knowledge = components["schemas"]["Knowledge"];
+export type KnowledgeTreeNode = components["schemas"]["KnowledgeTreeNode"];
 
 export type ApiResponse<T> = {
   data: T;
