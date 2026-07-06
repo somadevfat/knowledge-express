@@ -90,3 +90,7 @@ npm run deploy:vinext
 ## ドキュメント
 
 - [フロントエンドMVP要件定義](docs/frontend-requirements.md)
+
+## ライセンス
+
+[MIT](LICENSE)
