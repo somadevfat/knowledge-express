@@ -39,3 +39,31 @@ npm run dev
 npm run build
 npm run lint
 ```
+
+## Cloudflareへのデプロイ（vinext）
+
+本番は[vinext](https://github.com/cloudflare/vinext)でCloudflare Workers上にデプロイします。vinextはNext.jsのAPIをVite上に再実装したツールで、Next.js本体のツールチェーンは変更していません（`npm run dev`/`npm run build`は今まで通りNext.jsのまま動きます）。
+
+```bash
+npm run dev:vinext    # vinextの開発サーバー (port 3001)
+npm run build:vinext  # 本番ビルド
+npm run start:vinext  # ビルド成果物をローカルで起動して確認
+```
+
+Cloudflareへの初回デプロイ前に必要な準備:
+
+1. `wrangler login` でCloudflareアカウントに認証する（CIでは`CLOUDFLARE_API_TOKEN`環境変数でも可）
+2. `wrangler.jsonc`の`account_id`を設定するか、`CLOUDFLARE_ACCOUNT_ID`環境変数を設定する
+3. データキャッシュにCloudflare KVを使う設定になっているため、KV namespaceを作成し、`wrangler.jsonc`の`kv_namespaces[0].id`を実際のnamespace IDに置き換える
+
+```bash
+npx wrangler kv namespace create VINEXT_KV_CACHE
+```
+
+準備ができたらデプロイします。
+
+```bash
+npm run deploy:vinext
+```
+
+画像最適化はCloudflare Imagesを使う設定になっていますが、現状`next/image`は未使用のため実質未使用です（`next/font/google`はビルド時セルフホストではなくCDNから読み込まれる点のみ、vinextの既知の制限として残っています）。
