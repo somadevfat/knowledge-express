@@ -40,3 +40,14 @@ export async function searchKnowledge(params: {
 export async function getSiteConfig() {
   return fetchSiteConfig(process.env);
 }
+
+export async function getAllTags(): Promise<string[]> {
+  const articles = await listKnowledge(source);
+  const tags = new Set<string>();
+  for (const article of articles) {
+    for (const tag of article.toProps().tags) {
+      tags.add(tag);
+    }
+  }
+  return [...tags].sort();
+}

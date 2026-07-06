@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { getSiteConfig, searchKnowledge } from "@/features/knowledge/api/knowledge-api";
+import {
+  getAllTags,
+  getSiteConfig,
+  searchKnowledge,
+} from "@/features/knowledge/api/knowledge-api";
 import { KnowledgeList } from "@/features/knowledge/components/knowledge-list";
 
 export const dynamic = "force-dynamic";
@@ -22,9 +26,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const q = params.q?.trim();
   const tag = params.tag?.trim();
-  const [articles, siteConfig] = await Promise.all([
+  const [articles, siteConfig, tags] = await Promise.all([
     searchKnowledge({ q, tag }),
     getSiteConfig(),
+    getAllTags(),
   ]);
 
   return (
@@ -45,12 +50,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 placeholder="キーワード"
               />
             </label>
-            <input
+            <select
               name="tag"
-              defaultValue={tag}
+              defaultValue={tag ?? ""}
               className="h-10 rounded border border-slate-300 bg-white px-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 md:w-56"
-              placeholder="タグ"
-            />
+            >
+              <option value="">すべてのタグ</option>
+              {tags.map((tagOption) => (
+                <option key={tagOption} value={tagOption}>
+                  {tagOption}
+                </option>
+              ))}
+            </select>
             <button className="h-10 rounded bg-slate-950 px-4 text-sm font-medium text-white hover:bg-slate-800">
               検索
             </button>

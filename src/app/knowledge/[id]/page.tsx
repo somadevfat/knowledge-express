@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   NotFoundError,
+  getAllTags,
   getKnowledge,
   getKnowledgeList,
   getKnowledgeTree,
@@ -45,12 +46,14 @@ export default async function KnowledgeDetailPage({ params }: PageProps) {
   let article: Awaited<ReturnType<typeof getKnowledge>>;
   let tree: Awaited<ReturnType<typeof getKnowledgeTree>>;
   let siteConfig: Awaited<ReturnType<typeof getSiteConfig>>;
+  let tags: Awaited<ReturnType<typeof getAllTags>>;
 
   try {
-    [article, tree, siteConfig] = await Promise.all([
+    [article, tree, siteConfig, tags] = await Promise.all([
       getKnowledge(id),
       getKnowledgeTree(),
       getSiteConfig(),
+      getAllTags(),
     ]);
   } catch (error) {
     if (error instanceof NotFoundError) {
@@ -60,7 +63,12 @@ export default async function KnowledgeDetailPage({ params }: PageProps) {
   }
 
   return (
-    <WikiLayout article={article} tree={tree} logoText={siteConfig.logoText} />
+    <WikiLayout
+      article={article}
+      tree={tree}
+      logoText={siteConfig.logoText}
+      tags={tags}
+    />
   );
 }
 

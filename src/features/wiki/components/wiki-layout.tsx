@@ -9,9 +9,10 @@ type WikiLayoutProps = {
   tree: KnowledgeTreeNode[];
   article: Knowledge;
   logoText: string;
+  tags: string[];
 };
 
-export function WikiLayout({ tree, article, logoText }: WikiLayoutProps) {
+export function WikiLayout({ tree, article, logoText, tags }: WikiLayoutProps) {
   const headings = extractHeadings(article.body);
 
   return (
@@ -21,8 +22,8 @@ export function WikiLayout({ tree, article, logoText }: WikiLayoutProps) {
           <Link href="/knowledge" className="font-semibold text-slate-950">
             {logoText}
           </Link>
-          <form action="/search" className="ml-auto flex w-full max-w-md">
-            <label className="relative w-full">
+          <form action="/search" className="ml-auto flex w-full max-w-lg items-center gap-2">
+            <label className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 name="q"
@@ -30,6 +31,25 @@ export function WikiLayout({ tree, article, logoText }: WikiLayoutProps) {
                 placeholder="記事を検索"
               />
             </label>
+            <select
+              name="tag"
+              defaultValue=""
+              className="h-9 shrink-0 rounded border border-slate-300 bg-white px-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+            >
+              <option value="">すべてのタグ</option>
+              {tags.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              aria-label="検索"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-slate-950 text-white hover:bg-slate-800"
+            >
+              <Search className="h-4 w-4" />
+            </button>
           </form>
         </div>
       </header>
