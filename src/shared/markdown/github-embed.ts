@@ -115,7 +115,7 @@ async function renderEmbed(
   }
 }
 
-function parseGitHubBlobUrl(url: string): ParsedGitHubBlobUrl | undefined {
+export function parseGitHubBlobUrl(url: string): ParsedGitHubBlobUrl | undefined {
   const match = GITHUB_BLOB_URL_PATTERN.exec(url);
   if (match === null) {
     return undefined;

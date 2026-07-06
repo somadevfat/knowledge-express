@@ -62,6 +62,25 @@ logoText: SE WIKI
 - 取得に失敗した場合（URLが不正、ファイルが存在しない等）は、ページを落とさずエラー内容をコードブロックとして表示します
 - 埋め込まれたコードは`rehype-highlight`でシンタックスハイライトされます
 
+## テスト
+
+[Vitest](https://vitest.dev/)でユニットテストを書きます（E2Eは今のところ導入していません。vinext環境でのE2Eはセットアップが煩雑なため）。
+
+```bash
+npm run test        # 1回実行
+npm run test:watch  # watchモード
+```
+
+- テストは`src/**/__tests__/*.test.ts`に置きます（テスト対象コードと同じディレクトリの`__tests__/`配下）
+- 対象は主に`features/knowledge/server/`・`shared/markdown/`の純粋なロジック（GitHub取得・frontmatter解析・use-case・URLパースなど）。各関数につき正常系・異常系を最低1つずつ書きます
+- `page.tsx`（async Server Components）はユニットテスト向きではないため対象外にしています。動作確認は手動またはビルドで行います
+- `server-only`をimportしているモジュールは、`vitest.config.ts`で空モジュールへのエイリアスを設定しているため、Vitest上でも普通にimportできます
+- `fetch`を呼ぶ処理（GitHub取得系）は`vi.stubGlobal("fetch", ...)`でモックし、実際のネットワークへは飛ばしません
+
+## Lintルール
+
+`@typescript-eslint/no-explicit-any`を`error`にして`any`を禁止しています。また、`features/knowledge/server/**`は`features/knowledge/api/knowledge-api.ts`の内部実装という位置づけなので、それ以外の場所（`app/`配下など）から直接importすると`no-restricted-imports`でエラーになります。必ず`@/features/knowledge/api/knowledge-api`経由で使ってください。
+
 ## その他のコマンド
 
 ```bash

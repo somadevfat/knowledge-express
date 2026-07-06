@@ -157,12 +157,24 @@ UseCaseはアプリケーション固有の処理手順を表します。`
 }
 
 /**
+ * ナレッジソース関連の環境変数（`process.env`のうち実際に読む部分だけ）。
+ */
+export type GitHubEnv = {
+  GITHUB_OWNER?: string;
+  GITHUB_REPOSITORY?: string;
+  GITHUB_BRANCH?: string;
+  GITHUB_KNOWLEDGE_PATH?: string;
+  GITHUB_TOKEN?: string;
+  [key: string]: string | undefined;
+};
+
+/**
  * 環境変数からナレッジソースを生成する。
  *
  * @param env 実行環境の環境変数。
  * @returns GitHub設定があればGitHub Gateway、なければサンプルソース。
  */
-export function createKnowledgeSourceFromEnv(env: NodeJS.ProcessEnv): FetchKnowledgeSourcePort {
+export function createKnowledgeSourceFromEnv(env: GitHubEnv): FetchKnowledgeSourcePort {
   const owner = readOptionalEnv(env.GITHUB_OWNER);
   const repo = normalizeRepositoryName(readOptionalEnv(env.GITHUB_REPOSITORY));
 

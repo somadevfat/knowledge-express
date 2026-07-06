@@ -1,6 +1,6 @@
 import "server-only";
 import { parseFrontmatterBlock, type FrontmatterValue } from "./frontmatter";
-import { normalizeRepositoryName, readOptionalEnv } from "./knowledge-source";
+import { type GitHubEnv, normalizeRepositoryName, readOptionalEnv } from "./knowledge-source";
 
 export type SiteConfig = {
   title: string;
@@ -21,7 +21,7 @@ const SITE_CONFIG_PATH = "site.md";
  *
  * ファイルが無い・取得に失敗した場合はデフォルト設定にフォールバックする。
  */
-export async function fetchSiteConfig(env: NodeJS.ProcessEnv): Promise<SiteConfig> {
+export async function fetchSiteConfig(env: GitHubEnv): Promise<SiteConfig> {
   const owner = readOptionalEnv(env.GITHUB_OWNER);
   const repo = normalizeRepositoryName(readOptionalEnv(env.GITHUB_REPOSITORY));
 
