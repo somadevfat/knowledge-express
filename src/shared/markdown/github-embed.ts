@@ -1,5 +1,8 @@
 import "server-only";
 
+/**
+ * GitHubのblobパーマリンクを分解した結果。
+ */
 type ParsedGitHubBlobUrl = {
   owner: string;
   repo: string;
@@ -38,6 +41,10 @@ const LANGUAGE_BY_EXTENSION: Record<string, string> = {
  *
  * パーマリンク（`blob/<commit sha>/...`）を前提としており、常に書いた時点の
  * コードを指す。取得に失敗した場合はエラー内容をコードフェンスとして埋め込む。
+ *
+ * @param markdown 展開前のMarkdown本文。
+ * @param githubToken 埋め込み先リポジトリを取得する際に使うGitHubトークン（任意）。
+ * @returns embedフェンスをすべて実コードへ差し替えたMarkdown本文。
  */
 export async function expandCodeEmbeds(
   markdown: string,
@@ -64,6 +71,14 @@ export async function expandCodeEmbeds(
   return result;
 }
 
+/**
+ * 1つのembed参照を、キャプション付きリンク＋実際に取得したコードフェンスへ変換する。
+ * URLが不正、または取得に失敗した場合はエラー内容を書いたコードフェンスを返す
+ * （例外は投げず、記事全体の表示は継続させる）。
+ *
+ * @param url embedフェンスに書かれたGitHubパーマリンク。
+ * @param githubToken GitHub APIリクエストに使うトークン（任意）。
+ */
 async function renderEmbed(
   url: string,
   githubToken: string | undefined,
@@ -115,6 +130,13 @@ async function renderEmbed(
   }
 }
 
+/**
+ * GitHubのblob URL（`https://github.com/<owner>/<repo>/blob/<ref>/<path>[#Lstart-Lend]`）を
+ * owner/repo/ref/path/行範囲へ分解する。
+ *
+ * @param url 解析対象のURL。
+ * @returns 分解結果。GitHubのblob URLとして解釈できない場合はundefined。
+ */
 export function parseGitHubBlobUrl(url: string): ParsedGitHubBlobUrl | undefined {
   const match = GITHUB_BLOB_URL_PATTERN.exec(url);
   if (match === null) {
@@ -132,11 +154,18 @@ export function parseGitHubBlobUrl(url: string): ParsedGitHubBlobUrl | undefined
   };
 }
 
+/**
+ * ファイル拡張子からシンタックスハイライト用の言語名を推測する。
+ * 未知の拡張子は`"text"`（ハイライト無し）にフォールバックする。
+ */
 function inferLanguage(path: string): string {
   const extension = path.split(".").pop()?.toLowerCase() ?? "";
   return LANGUAGE_BY_EXTENSION[extension] ?? "text";
 }
 
+/**
+ * 指定した言語タグでMarkdownのコードフェンス文字列を組み立てる。
+ */
 function codeFence(language: string, code: string): string {
   return "```" + language + "\n" + code + "\n```";
 }

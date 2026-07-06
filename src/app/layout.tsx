@@ -13,6 +13,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/**
+ * サイト共通のmetadataを、{@link getSiteConfig}（`site.md`）の内容から動的に組み立てる。
+ */
 export async function generateMetadata(): Promise<Metadata> {
   const siteConfig = await getSiteConfig();
 
@@ -30,6 +33,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/**
+ * 全ページ共通のルートレイアウト（フォント読み込み・`<html>`/`<body>`）。
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

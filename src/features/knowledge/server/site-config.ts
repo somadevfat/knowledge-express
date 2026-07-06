@@ -2,12 +2,18 @@ import "server-only";
 import { parseFrontmatterBlock, type FrontmatterValue } from "./frontmatter";
 import { type GitHubEnv, normalizeRepositoryName, readOptionalEnv } from "./knowledge-source";
 
+/**
+ * サイトのブランディング設定（`site.md`から読み込む、または既定値）。
+ */
 export type SiteConfig = {
   title: string;
   subtitle: string;
   logoText: string;
 };
 
+/**
+ * `site.md`が無い・取得に失敗したときに使うフォールバック値。
+ */
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
   title: "SE WIKI",
   subtitle: "実務で使える設計からデプロイまで、すべて解説する",
@@ -58,6 +64,9 @@ export async function fetchSiteConfig(env: GitHubEnv): Promise<SiteConfig> {
   }
 }
 
+/**
+ * frontmatterの値が空でない文字列であればそれを返す。配列や空文字列はundefined扱い。
+ */
 function pickString(value: FrontmatterValue | undefined): string | undefined {
   if (typeof value !== "string") {
     return undefined;

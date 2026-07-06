@@ -12,6 +12,10 @@ type WikiLayoutProps = {
   tags: string[];
 };
 
+/**
+ * Azure DevOps Wiki風の3ペインレイアウト（左: 記事ツリー、中央: 本文、右: 目次）。
+ * 記事詳細ページ（`app/knowledge/[id]/page.tsx`）の描画を担う。
+ */
 export function WikiLayout({ tree, article, logoText, tags }: WikiLayoutProps) {
   const headings = extractHeadings(article.body);
 

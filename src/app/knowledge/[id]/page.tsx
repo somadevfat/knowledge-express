@@ -18,6 +18,10 @@ type PageProps = {
   }>;
 };
 
+/**
+ * 記事ごとの`title`/`description`/OGP metadataを生成する。
+ * 記事が取得できない場合は「記事が見つかりません」を返す（実際のnotFound判定は本体側で行う）。
+ */
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -41,6 +45,9 @@ export async function generateMetadata({
   }
 }
 
+/**
+ * 記事詳細ページ。IDに一致する記事が無ければ`notFound()`（404ページ）を表示する。
+ */
 export default async function KnowledgeDetailPage({ params }: PageProps) {
   const { id } = await params;
   let article: Awaited<ReturnType<typeof getKnowledge>>;
@@ -72,6 +79,10 @@ export default async function KnowledgeDetailPage({ params }: PageProps) {
   );
 }
 
+/**
+ * ビルド時に静的生成する記事詳細ページのパラメータ一覧。取得に失敗しても
+ * ビルド自体は止めず、空配列（＝すべてオンデマンド生成）にフォールバックする。
+ */
 export async function generateStaticParams() {
   try {
     const articles = await getKnowledgeList();

@@ -46,6 +46,7 @@
     "@vitejs/plugin-rsc": "^0.5.27",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "eslint-plugin-jsdoc": "^63.0.12",
     "husky": "^9.1.7",
     "tailwindcss": "^4",
     "typescript": "^5",

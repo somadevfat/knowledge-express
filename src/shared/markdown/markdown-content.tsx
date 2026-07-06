@@ -9,6 +9,12 @@ type MarkdownContentProps = {
   content: string;
 };
 
+/**
+ * 記事本文（Markdown）を表示するコンポーネント。
+ *
+ * 表示前に`embed:`コードフェンスを実際のGitHubコードへ展開し（{@link expandCodeEmbeds}）、
+ * GFM記法・見出しのアンカーリンク・シンタックスハイライトを適用してレンダリングする。
+ */
 export async function MarkdownContent({ content }: MarkdownContentProps) {
   const expanded = await expandCodeEmbeds(content, process.env.GITHUB_TOKEN);
 

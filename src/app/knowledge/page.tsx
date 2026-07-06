@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   description: "GitHubで管理しているナレッジ記事の一覧です。",
 };
 
+/**
+ * ナレッジ記事一覧画面。左にWikiツリー、右に全記事のカード一覧を表示する。
+ */
 export default async function KnowledgePage() {
   const [articles, tree, siteConfig] = await Promise.all([
     getKnowledgeList(),

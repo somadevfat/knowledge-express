@@ -22,6 +22,9 @@ type SearchPageProps = {
   }>;
 };
 
+/**
+ * 検索結果画面。`q`（キーワード）・`tag`（タグ）のクエリパラメータで絞り込む。
+ */
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const q = params.q?.trim();

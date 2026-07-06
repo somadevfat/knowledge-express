@@ -76,10 +76,13 @@ npm run test:watch  # watchモード
 - `page.tsx`（async Server Components）はユニットテスト向きではないため対象外にしています。動作確認は手動またはビルドで行います
 - `server-only`をimportしているモジュールは、`vitest.config.ts`で空モジュールへのエイリアスを設定しているため、Vitest上でも普通にimportできます
 - `fetch`を呼ぶ処理（GitHub取得系）は`vi.stubGlobal("fetch", ...)`でモックし、実際のネットワークへは飛ばしません
+- テストの本体（`it(...)`の中身）は必ず`/* Arrange */` → `/* Act */` → `/* Assert */`の3コメントで区切ります。準備・実行・検証の境目を毎回明示することで、後から読んだときに「何を検証しているテストか」が一目でわかるようにするためです
 
 ## Lintルール
 
-`@typescript-eslint/no-explicit-any`を`error`にして`any`を禁止しています。また、`features/knowledge/server/**`は`features/knowledge/api/knowledge-api.ts`の内部実装という位置づけなので、それ以外の場所（`app/`配下など）から直接importすると`no-restricted-imports`でエラーになります。必ず`@/features/knowledge/api/knowledge-api`経由で使ってください。
+- `@typescript-eslint/no-explicit-any`を`error`にして`any`を禁止しています
+- `features/knowledge/server/**`は`features/knowledge/api/knowledge-api.ts`の内部実装という位置づけなので、それ以外の場所（`app/`配下など）から直接importすると`no-restricted-imports`でエラーになります。必ず`@/features/knowledge/api/knowledge-api`経由で使ってください
+- `jsdoc/require-jsdoc`（[eslint-plugin-jsdoc](https://github.com/gajus/eslint-plugin-jsdoc)）で、すべての関数宣言・クラス・クラスメソッド（exportの有無を問わず）にJSDocコメントを必須にしています。`__tests__/`配下は対象外（テストの意図は`it(...)`の説明文で表す）
 
 ## その他のコマンド
 

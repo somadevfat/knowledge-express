@@ -1,7 +1,15 @@
+/**
+ * frontmatterの1項目の値。単純な文字列、またはYAMLのリスト記法（`- item`）由来の配列。
+ */
 export type FrontmatterValue = string | string[];
 
 /**
  * `---`区切りのfrontmatterブロックとMarkdown本文を分離する。
+ *
+ * @param content Markdown文書の生テキスト。
+ * @returns 解析したfrontmatter（キーごとの値）と、frontmatterを除いた本文。
+ *   frontmatterブロックが無い、または終端の`---`が見つからない場合は
+ *   `frontmatter: {}`・`body`は元のテキスト全体を返す。
  */
 export function parseFrontmatterBlock(content: string): {
   frontmatter: Record<string, FrontmatterValue>;
@@ -22,6 +30,12 @@ export function parseFrontmatterBlock(content: string): {
   return { frontmatter: parseFrontmatterLines(frontmatterText), body };
 }
 
+/**
+ * frontmatterブロック本文（`---`の中身）を1行ずつ`key: value`として解析する。
+ * 値が空でその次の行から`- `で始まるリストが続く場合は、配列としてまとめて取り込む。
+ *
+ * @param text frontmatterブロックの中身（開始/終端の`---`を除いたテキスト）。
+ */
 function parseFrontmatterLines(text: string): Record<string, FrontmatterValue> {
   const result: Record<string, FrontmatterValue> = {};
   const lines = text.split("\n");
@@ -58,6 +72,9 @@ function parseFrontmatterLines(text: string): Record<string, FrontmatterValue> {
   return result;
 }
 
+/**
+ * 値を囲むシングル/ダブルクォートを取り除く（`title: "foo"`のような記法に対応）。
+ */
 function stripQuotes(value: string): string {
   return value.replace(/^["']|["']$/g, "");
 }

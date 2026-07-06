@@ -1,6 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import jsdoc from "eslint-plugin-jsdoc";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -12,6 +13,27 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": "error",
       "@typescript-eslint/consistent-type-imports": "error",
+    },
+  },
+  {
+    // Require a JSDoc comment on every function declaration, class, and
+    // class method (exported or not) so intent/params/throws are documented
+    // at the point of use, not just re-derivable from the implementation.
+    // Excludes __tests__/**: test intent lives in the it()/describe() text.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/**/__tests__/**"],
+    plugins: { jsdoc },
+    rules: {
+      "jsdoc/require-jsdoc": [
+        "error",
+        {
+          require: {
+            FunctionDeclaration: true,
+            ClassDeclaration: true,
+            MethodDefinition: true,
+          },
+        },
+      ],
     },
   },
   {

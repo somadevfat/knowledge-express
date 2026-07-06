@@ -6,6 +6,10 @@ type KnowledgeListProps = {
   articles: Knowledge[];
 };
 
+/**
+ * ナレッジ記事のカード一覧（一覧画面・検索結果画面で共通利用）。
+ * `articles`が空の場合は空状態メッセージを表示する。
+ */
 export function KnowledgeList({ articles }: KnowledgeListProps) {
   if (articles.length === 0) {
     return (

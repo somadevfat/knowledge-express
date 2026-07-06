@@ -1,3 +1,6 @@
+/**
+ * `/search`のローディングUI（スケルトン表示）。
+ */
 export default function SearchLoading() {
   return (
     <div className="min-h-screen bg-slate-50">

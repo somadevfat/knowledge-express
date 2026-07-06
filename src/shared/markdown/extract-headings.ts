@@ -1,9 +1,18 @@
+/**
+ * 記事本文から抽出した見出し1件（目次表示に使う）。
+ */
 export type MarkdownHeading = {
   id: string;
   depth: number;
   text: string;
 };
 
+/**
+ * Markdown本文からh2/h3見出しを抽出する。h1・それ以外の深さの見出しは無視する。
+ *
+ * @param markdown 記事本文（Markdown）。
+ * @returns 出現順の見出し一覧。見出しが無ければ空配列。
+ */
 export function extractHeadings(markdown: string): MarkdownHeading[] {
   return markdown
     .split("\n")
@@ -16,6 +25,10 @@ export function extractHeadings(markdown: string): MarkdownHeading[] {
     }));
 }
 
+/**
+ * 見出しテキストを、目次のアンカーリンク（`#slug`）に使えるスラッグへ変換する。
+ * `rehype-slug`が本文側に振るidと一致させるための実装。
+ */
 function slugifyHeading(value: string): string {
   return value
     .trim()

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { FileQuestion } from "lucide-react";
 
+/**
+ * 記事詳細ページの404 UI（`notFound()`が呼ばれたときに表示される）。
+ */
 export default function KnowledgeDetailNotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-5">

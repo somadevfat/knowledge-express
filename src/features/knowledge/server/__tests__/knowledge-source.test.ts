@@ -12,41 +12,71 @@ afterEach(() => {
 
 describe("normalizeRepositoryName", () => {
   it("正常系: プレーンなリポジトリ名はそのまま返す", () => {
-    expect(normalizeRepositoryName("knowledge-wiki")).toBe("knowledge-wiki");
+    /* Arrange */
+    const value = "knowledge-wiki";
+
+    /* Act */
+    const result = normalizeRepositoryName(value);
+
+    /* Assert */
+    expect(result).toBe("knowledge-wiki");
   });
 
   it("正常系: SSH形式のURLからリポジトリ名だけを取り出す", () => {
-    expect(normalizeRepositoryName("git@github.com:owner/knowledge-wiki.git")).toBe(
-      "knowledge-wiki",
-    );
+    /* Arrange */
+    const value = "git@github.com:owner/knowledge-wiki.git";
+
+    /* Act */
+    const result = normalizeRepositoryName(value);
+
+    /* Assert */
+    expect(result).toBe("knowledge-wiki");
   });
 
   it("異常系: undefinedはundefinedのまま返す", () => {
-    expect(normalizeRepositoryName(undefined)).toBeUndefined();
+    /* Arrange */
+    const value = undefined;
+
+    /* Act */
+    const result = normalizeRepositoryName(value);
+
+    /* Assert */
+    expect(result).toBeUndefined();
   });
 });
 
 describe("createKnowledgeSourceFromEnv", () => {
   it("正常系: GITHUB_OWNER/GITHUB_REPOSITORYがあればGitHubKnowledgeSourceを返す", () => {
-    const source = createKnowledgeSourceFromEnv({
+    /* Arrange */
+    const env = {
       GITHUB_OWNER: "somadevfat",
       GITHUB_REPOSITORY: "knowledge-wiki",
-    });
+    };
 
+    /* Act */
+    const source = createKnowledgeSourceFromEnv(env);
+
+    /* Assert */
     expect(source).toBeInstanceOf(GitHubKnowledgeSource);
   });
 
   it("異常系: GitHub設定が無い場合はサンプルのInMemoryKnowledgeSourceにフォールバックする", async () => {
-    const source = createKnowledgeSourceFromEnv({});
+    /* Arrange */
+    const env = {};
 
-    expect(source).toBeInstanceOf(InMemoryKnowledgeSource);
+    /* Act */
+    const source = createKnowledgeSourceFromEnv(env);
     const documents = await source.fetchAll();
+
+    /* Assert */
+    expect(source).toBeInstanceOf(InMemoryKnowledgeSource);
     expect(documents.length).toBeGreaterThan(0);
   });
 });
 
 describe("GitHubKnowledgeSource.fetchAll", () => {
   it("正常系: ディレクトリを再帰的にたどり、.mdファイルの内容を取得する", async () => {
+    /* Arrange */
     const fetchMock = vi.fn(async (input: string | URL) => {
       const url = input.toString();
       if (url.includes("/contents/docs")) {
@@ -69,7 +99,6 @@ describe("GitHubKnowledgeSource.fetchAll", () => {
       throw new Error(`unexpected fetch: ${url}`);
     });
     vi.stubGlobal("fetch", fetchMock);
-
     const source = new GitHubKnowledgeSource({
       owner: "owner",
       repo: "repo",
@@ -77,8 +106,10 @@ describe("GitHubKnowledgeSource.fetchAll", () => {
       rootPath: "docs",
     });
 
+    /* Act */
     const documents = await source.fetchAll();
 
+    /* Assert */
     expect(documents).toEqual([
       {
         path: "docs/controller.md",
@@ -89,11 +120,11 @@ describe("GitHubKnowledgeSource.fetchAll", () => {
   });
 
   it("異常系: Contents APIが失敗した場合はエラーを投げる", async () => {
+    /* Arrange */
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => new Response("Not Found", { status: 404 })),
     );
-
     const source = new GitHubKnowledgeSource({
       owner: "owner",
       repo: "repo",
@@ -101,6 +132,10 @@ describe("GitHubKnowledgeSource.fetchAll", () => {
       rootPath: "docs",
     });
 
-    await expect(source.fetchAll()).rejects.toThrow(/status=404/);
+    /* Act */
+    const act = source.fetchAll();
+
+    /* Assert */
+    await expect(act).rejects.toThrow(/status=404/);
   });
 });

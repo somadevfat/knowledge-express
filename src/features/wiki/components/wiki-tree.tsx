@@ -7,6 +7,12 @@ type WikiTreeProps = {
   activeId?: string;
 };
 
+/**
+ * サイドバーのカテゴリ/記事ツリー。
+ * カテゴリは`activeId`を含む枝だけ初期展開し、それ以外はデフォルトで折りたたむ。
+ *
+ * @param activeId 現在表示中の記事ID（記事詳細ページでハイライト表示に使う）。
+ */
 export function WikiTree({ nodes, activeId }: WikiTreeProps) {
   if (nodes.length === 0) {
     return <p className="px-2 text-sm text-slate-500">記事がありません。</p>;
@@ -21,6 +27,9 @@ export function WikiTree({ nodes, activeId }: WikiTreeProps) {
   );
 }
 
+/**
+ * ツリーの1ノード（カテゴリなら`<details>`で子ノードを再帰描画、記事ならリンク）を描画する。
+ */
 function WikiTreeItem({
   node,
   activeId,
@@ -67,6 +76,10 @@ function WikiTreeItem({
   );
 }
 
+/**
+ * `targetId`のノードが、`node`の子孫（再帰的に）に含まれるかを判定する。
+ * カテゴリを初期展開すべきか（アクティブな記事への経路上にあるか）の判定に使う。
+ */
 function containsNodeId(node: KnowledgeTreeNode, targetId: string): boolean {
   return node.children.some(
     (child) => child.id === targetId || containsNodeId(child, targetId),

@@ -2,6 +2,10 @@ import { Knowledge, type KnowledgeId } from "./knowledge-entity";
 import type { FetchKnowledgeSourcePort } from "./knowledge-source";
 import { NotFoundError } from "./errors";
 
+/**
+ * Wikiサイドバーで使うカテゴリ/記事ツリーの1ノード。
+ * カテゴリノードは`id`が`category:`で始まる。
+ */
 export type KnowledgeTreeNode = {
   id: string;
   title: string;
@@ -9,6 +13,9 @@ export type KnowledgeTreeNode = {
   children: KnowledgeTreeNode[];
 };
 
+/**
+ * {@link searchKnowledge}の検索条件。
+ */
 export type KnowledgeSearchQuery = {
   q?: string;
   tag?: string;
@@ -43,6 +50,8 @@ export async function getKnowledge(source: FetchKnowledgeSourcePort, id: Knowled
 
 /**
  * GitHub由来のナレッジ記事をキーワードとタグで検索する。
+ *
+ * @param query キーワード（タイトル・本文・抜粋・カテゴリを部分一致）とタグ（完全一致）。
  */
 export async function searchKnowledge(
   source: FetchKnowledgeSourcePort,
@@ -64,6 +73,7 @@ export async function searchKnowledge(
 
 /**
  * Azure DevOps Wikiの左サイドバーで使う記事ツリーを生成する。
+ * 記事の`category`（`/`区切り）をもとにカテゴリノードを階層化する。
  */
 export async function getKnowledgeTree(source: FetchKnowledgeSourcePort): Promise<KnowledgeTreeNode[]> {
   const root: KnowledgeTreeNode[] = [];
@@ -75,6 +85,10 @@ export async function getKnowledgeTree(source: FetchKnowledgeSourcePort): Promis
   return sortTree(root);
 }
 
+/**
+ * 1件の記事を、そのcategoryパスに沿ってツリーへ挿入する。
+ * 途中のカテゴリノードが無ければその場で作る（破壊的に`root`を更新する）。
+ */
 function insertKnowledge(root: KnowledgeTreeNode[], knowledge: Knowledge): void {
   const props = knowledge.toProps();
   const categoryParts = props.category.split("/").map((part) => part.trim()).filter(Boolean);
@@ -104,6 +118,9 @@ function insertKnowledge(root: KnowledgeTreeNode[], knowledge: Knowledge): void 
   });
 }
 
+/**
+ * ツリーの各階層をタイトルの辞書順に並べ替える（再帰的に子ノードも整列する）。
+ */
 function sortTree(nodes: KnowledgeTreeNode[]): KnowledgeTreeNode[] {
   return nodes
     .map((node) => ({

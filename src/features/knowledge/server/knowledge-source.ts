@@ -4,9 +4,15 @@ import type { KnowledgeSourceDocument } from "./knowledge-entity";
  * GitHubなど外部ナレッジソースからMarkdown文書を取得するためのPort。
  */
 export interface FetchKnowledgeSourcePort {
+  /**
+   * ソース配下にあるMarkdown文書をすべて取得する。
+   */
   fetchAll(): Promise<KnowledgeSourceDocument[]>;
 }
 
+/**
+ * {@link GitHubKnowledgeSource}の生成に必要な設定値。
+ */
 export type GitHubKnowledgeSourceConfig = {
   owner: string;
   repo: string;
@@ -15,6 +21,9 @@ export type GitHubKnowledgeSourceConfig = {
   token?: string;
 };
 
+/**
+ * GitHub Contents APIが返すファイル/ディレクトリ1件分の情報。
+ */
 type GitHubContentItem = {
   type: "file" | "dir";
   name: string;
@@ -27,12 +36,23 @@ type GitHubContentItem = {
  * GitHub Contents APIからMarkdown記事を取得するGateway実装。
  */
 export class GitHubKnowledgeSource implements FetchKnowledgeSourcePort {
+  /**
+   * @param config 取得先リポジトリ・パス・認証トークンなどの設定。
+   */
   constructor(private readonly config: GitHubKnowledgeSourceConfig) {}
 
+  /**
+   * `rootPath`配下を再帰的にたどり、`.md`ファイルをすべて取得する。
+   */
   async fetchAll(): Promise<KnowledgeSourceDocument[]> {
     return this.fetchDirectory(this.config.rootPath);
   }
 
+  /**
+   * 指定ディレクトリ配下（サブディレクトリ含む）の`.md`ファイルを再帰的に集める。
+   *
+   * @param path リポジトリルートからの相対パス。
+   */
   private async fetchDirectory(path: string): Promise<KnowledgeSourceDocument[]> {
     const items = await this.fetchContents(path);
     const documents: KnowledgeSourceDocument[] = [];
@@ -55,6 +75,12 @@ export class GitHubKnowledgeSource implements FetchKnowledgeSourcePort {
     return documents;
   }
 
+  /**
+   * GitHub Contents APIで指定パスの一覧（ファイル/ディレクトリ）を取得する。
+   *
+   * @param path リポジトリルートからの相対パス。
+   * @throws {Error} レスポンスが失敗ステータスの場合。
+   */
   private async fetchContents(path: string): Promise<GitHubContentItem[]> {
     const encodedPath = path
       .split("/")
@@ -79,6 +105,12 @@ export class GitHubKnowledgeSource implements FetchKnowledgeSourcePort {
     return Array.isArray(body) ? body : [body];
   }
 
+  /**
+   * `download_url`からMarkdownの生テキストを取得する。
+   *
+   * @param url ファイルのraw取得URL。
+   * @throws {Error} レスポンスが失敗ステータスの場合。
+   */
   private async fetchRawMarkdown(url: string): Promise<string> {
     const response = await fetch(url, {
       headers: this.headers(),
@@ -92,6 +124,9 @@ export class GitHubKnowledgeSource implements FetchKnowledgeSourcePort {
     return response.text();
   }
 
+  /**
+   * GitHub APIリクエスト共通のヘッダーを組み立てる（tokenがあればBearer認証を付与）。
+   */
   private headers(): HeadersInit {
     return {
       Accept: "application/vnd.github+json",
@@ -105,8 +140,14 @@ export class GitHubKnowledgeSource implements FetchKnowledgeSourcePort {
  * ローカル開発でGitHub設定がないときに使うインメモリのナレッジソース。
  */
 export class InMemoryKnowledgeSource implements FetchKnowledgeSourcePort {
+  /**
+   * @param documents 返却するMarkdown文書一覧。
+   */
   constructor(private readonly documents: KnowledgeSourceDocument[]) {}
 
+  /**
+   * 登録済みのMarkdown文書をすべて返す（updatedAtはコピーして返す）。
+   */
   async fetchAll(): Promise<KnowledgeSourceDocument[]> {
     return this.documents.map((document) => ({
       ...document,
@@ -115,6 +156,9 @@ export class InMemoryKnowledgeSource implements FetchKnowledgeSourcePort {
   }
 }
 
+/**
+ * GitHub設定が無い環境（ローカル動作確認など）向けのサンプル記事ソースを作る。
+ */
 function createSampleKnowledgeSource(): InMemoryKnowledgeSource {
   return new InMemoryKnowledgeSource([
     {
@@ -191,11 +235,22 @@ export function createKnowledgeSourceFromEnv(env: GitHubEnv): FetchKnowledgeSour
   });
 }
 
+/**
+ * 環境変数の値をトリムし、空文字列は未設定（undefined）として扱う。
+ *
+ * @param value 環境変数の生の値。
+ */
 export function readOptionalEnv(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed === undefined || trimmed.length === 0 ? undefined : trimmed;
 }
 
+/**
+ * `GITHUB_REPOSITORY`がリポジトリ名・SSH URL・HTTPS URLのどれで指定されても
+ * リポジトリ名だけを取り出す。
+ *
+ * @param value リポジトリ名またはgit URL。
+ */
 export function normalizeRepositoryName(value: string | undefined): string | undefined {
   if (value === undefined) {
     return undefined;

@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 
+/**
+ * `/knowledge`のエラーバウンダリ。GitHubからの記事取得失敗時に表示する。
+ */
 export default function KnowledgeError({
   error,
   unstable_retry,
@@ -18,7 +21,7 @@ export default function KnowledgeError({
           記事を読み込めませんでした
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          バックエンドAPIへの接続に失敗しました。時間をおいて再度お試しください。
+          GitHubからの記事取得に失敗しました。時間をおいて再度お試しください。
         </p>
         <p className="mt-1 text-xs text-slate-400">{error.message}</p>
         <div className="mt-5 flex justify-center gap-2">

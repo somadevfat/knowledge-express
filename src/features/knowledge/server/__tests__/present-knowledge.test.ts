@@ -4,6 +4,7 @@ import { presentKnowledge } from "../present-knowledge";
 
 describe("presentKnowledge", () => {
   it("正常系: updatedAtをISO文字列へ変換する", () => {
+    /* Arrange */
     const knowledge = Knowledge.fromSourceDocument({
       path: "a.md",
       sourceUrl: "https://github.com/example/wiki/blob/main/a.md",
@@ -11,16 +12,25 @@ describe("presentKnowledge", () => {
       updatedAt: new Date("2026-01-02T03:04:05.000Z"),
     });
 
-    expect(presentKnowledge(knowledge).updatedAt).toBe("2026-01-02T03:04:05.000Z");
+    /* Act */
+    const dto = presentKnowledge(knowledge);
+
+    /* Assert */
+    expect(dto.updatedAt).toBe("2026-01-02T03:04:05.000Z");
   });
 
   it("異常系: updatedAtが無い場合はundefinedのまま返す", () => {
+    /* Arrange */
     const knowledge = Knowledge.fromSourceDocument({
       path: "b.md",
       sourceUrl: "https://github.com/example/wiki/blob/main/b.md",
       content: "---\ntitle: B\n---\n\n本文",
     });
 
-    expect(presentKnowledge(knowledge).updatedAt).toBeUndefined();
+    /* Act */
+    const dto = presentKnowledge(knowledge);
+
+    /* Assert */
+    expect(dto.updatedAt).toBeUndefined();
   });
 });
