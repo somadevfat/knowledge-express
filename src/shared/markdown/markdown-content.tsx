@@ -1,13 +1,17 @@
 import ReactMarkdown from "react-markdown";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+import { expandCodeEmbeds } from "./github-embed";
 
 type MarkdownContentProps = {
   content: string;
 };
 
-export function MarkdownContent({ content }: MarkdownContentProps) {
+export async function MarkdownContent({ content }: MarkdownContentProps) {
+  const expanded = await expandCodeEmbeds(content, process.env.GITHUB_TOKEN);
+
   return (
     <article className="markdown-body">
       <ReactMarkdown
@@ -15,6 +19,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         rehypePlugins={[
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
+          rehypeHighlight,
         ]}
         components={{
           a: ({ children, href }) => (
@@ -32,7 +37,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           ),
         }}
       >
-        {content}
+        {expanded}
       </ReactMarkdown>
     </article>
   );
