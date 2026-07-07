@@ -6,6 +6,12 @@
 		"nodejs_compat"
 	],
 	"main": "vinext/server/fetch-handler",
+	"vars": {
+		"GITHUB_OWNER": "somadevfat",
+		"GITHUB_REPOSITORY": "knowledge-wiki",
+		"GITHUB_BRANCH": "main",
+		"GITHUB_KNOWLEDGE_PATH": "docs",
+	},
 	"assets": {
 		"directory": "dist/client",
 		"not_found_handling": "none",
