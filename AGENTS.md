@@ -43,3 +43,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - コード埋め込みは`` ```embed:<GitHubパーマリンク>``` ``形式。**ブランチ名ではなく必ずコミットSHA固定のパーマリンク**を使う（GitHub上で該当行を選択し`y`キー）。ブランチ参照だと後からファイルが編集されて行がズレ、解説と食い違ったコードが気付かず表示され続ける
 - GitHub取得（記事・site.md・コード埋め込み）の失敗はページ全体を落とさず、その場にエラー内容を表示する
 
+## データ永続化（Cloudflare D1）
+
+- 記事のような「GitHubが正本」のデータではなく、サイトのアクセス数のようにアプリ側で状態を持つ必要があるものだけD1を使う
+- D1へのアクセスは生SQLではなく[Drizzle ORM](https://orm.drizzle.team/)（`drizzle-orm/d1`）経由で行う。スキーマは`src/features/knowledge/server/db/schema.ts`
+- D1バインディングが取得できないランタイム（`vinext dev`/Cloudflare Workers以外）では、機能を静かに無効化する（例外を投げてページを落とさない）
+- スキーマ変更は`drizzle-kit generate`でマイグレーションSQLを`migrations/`に生成し、`wrangler d1 migrations apply <db> --local`と`--remote`の両方を必ず適用する
+

@@ -62,6 +62,22 @@ logoText: SE WIKI
 - 取得に失敗した場合（URLが不正、ファイルが存在しない等）は、ページを落とさずエラー内容をコードブロックとして表示します
 - 埋め込まれたコードは`rehype-highlight`でシンタックスハイライトされます
 
+## サイトアクセス数（Cloudflare D1）
+
+全ページ共通のフッターに、サイト全体のアクセス数を表示します（`src/features/knowledge/server/view-count.ts` + [Drizzle ORM](https://orm.drizzle.team/)）。
+
+- Cloudflare D1（`se-wiki-views`データベース、`site_views`テーブルに`id=1`の1行だけ持つ）にDrizzle経由でupsertします
+- `wrangler.jsonc`の`d1_databases`で`VIEWS_DB`としてバインドし、`cloudflare:workers`の`env.VIEWS_DB`経由でアクセスします
+- D1バインディングが無いランタイム（プレーンな`next dev`/`next build`、`vinext start`など、Cloudflare Workersランタイムをエミュレートしない環境）では、静かに機能を無効化します（フッター自体を表示しない）。**ローカルで実際に動作確認したい場合は`npm run dev:vinext`を使ってください**（Miniflare経由でD1をエミュレートします）
+- スキーマは`src/features/knowledge/server/db/schema.ts`、マイグレーションSQLは`migrations/`に置きます
+
+```bash
+# スキーマ変更時
+npx drizzle-kit generate
+npx wrangler d1 migrations apply se-wiki-views --local   # ローカル(Miniflare)へ適用
+npx wrangler d1 migrations apply se-wiki-views --remote  # 本番D1へ適用
+```
+
 ## テスト
 
 [Vitest](https://vitest.dev/)でユニットテストを書きます（E2Eは今のところ導入していません。vinext環境でのE2Eはセットアップが煩雑なため）。

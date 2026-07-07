@@ -1,0 +1,8 @@
+-- Migration number: 0002 	 2026-07-07T10:51:33.950Z
+
+DROP TABLE IF EXISTS article_views;
+
+CREATE TABLE IF NOT EXISTS site_views (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  view_count INTEGER NOT NULL DEFAULT 0
+);

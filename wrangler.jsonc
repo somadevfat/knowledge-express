@@ -23,4 +23,11 @@
 			"id": "74a90fdc792c400e84efaabfc4637683",
 		},
 	],
+	"d1_databases": [
+		{
+			"binding": "VIEWS_DB",
+			"database_name": "se-wiki-views",
+			"database_id": "eca14688-0d06-458e-916a-c8acbf2fa0ef",
+		},
+	],
 }

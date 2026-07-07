@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getSiteConfig } from "@/features/knowledge/api/knowledge-api";
+import { getSiteConfig, recordSiteView } from "@/features/knowledge/api/knowledge-api";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,18 +35,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * 全ページ共通のルートレイアウト（フォント読み込み・`<html>`/`<body>`）。
+ * リクエストごとにサイト全体のアクセス数を1増やし、フッターに表示する。
  */
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const viewCount = await recordSiteView();
+
   return (
     <html
       lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-slate-50 text-slate-950">{children}</body>
+      <body className="min-h-full bg-slate-50 text-slate-950">
+        {children}
+        {viewCount !== undefined && (
+          <footer className="border-t border-slate-200 bg-white px-5 py-3 text-center text-xs text-slate-500">
+            サイトアクセス数: {viewCount.toLocaleString("ja-JP")}
+          </footer>
+        )}
+      </body>
     </html>
   );
 }

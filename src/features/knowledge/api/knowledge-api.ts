@@ -8,6 +8,10 @@ import {
 } from "../server/use-cases";
 import { presentKnowledge } from "../server/present-knowledge";
 import { fetchSiteConfig } from "../server/site-config";
+import {
+  getViewsDatabaseBinding,
+  recordSiteView as recordSiteViewInDb,
+} from "../server/view-count";
 import type { Knowledge, KnowledgeTreeNode } from "../types/knowledge";
 
 export { NotFoundError } from "../server/errors";
@@ -81,4 +85,18 @@ export async function getAllTags(): Promise<string[]> {
     }
   }
   return [...tags].sort();
+}
+
+/**
+ * サイト全体のアクセス数を1増やし、更新後の値を返す。
+ *
+ * Cloudflare D1（vinext経由）が使えないランタイム（プレーンな`next dev`/`next build`など）
+ * では何もせずundefinedを返す。
+ */
+export async function recordSiteView(): Promise<number | undefined> {
+  const db = await getViewsDatabaseBinding();
+  if (db === undefined) {
+    return undefined;
+  }
+  return recordSiteViewInDb(db);
 }
